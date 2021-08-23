@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+  postgres:
+    image: 'postgres:9.6-alpine'
+    volumes:
+      - postgres-transacoes-volume:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: transacoes
+
+volumes:
+  postgres-transacoes-volume:

@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: transacoes-app
+  # CONFIGURAÇÕES DA JPA
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      javax:
+        persistence:
+          query:
+            timeout: 50
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  # CONFIGURAÇÕES DE BANCO
+  datasource:
+    url: jdbc:postgresql://${HOST_DB:localhost:5433/transacoes}
+    username: ${USER_DB:user}
+    password: ${DB_PASSWORD:password}
+  # CONFIGURAÇÕES DO KAFKA
+  kafka:
+    # Endereço do Kafka
+    bootstrap-servers: ${KAFKA_HOST:localhost:9092}
+    # Definição dos tópicos
+    topic:
+      transactions: ${KAFKA_TOPICO_TRANSACAO:transacoes}
+    consumer:
+      # Formato da chave (String) recebida!
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # Formato da mensagem \ evento (JSON) recebida(o)!
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      # Identificador do grupo de consumo
+      group-id: ${KAFKA_CONSUMER_GROUP_ID:transacoes-app}
+      # Modelo de coleta do consumidor (latest, earliest, none)
+      auto-offset-reset: ${KAFKA_AUTO-OFFSET-RESET:latest}
+
+#CONFIGURAÇÕES DE TIMEOUT DO FEIGN
+feign:
+  client:
+    config:
+      cartoes:
+        readTimeout: 5000
+        connectTimeout: 50000
+      transacoes:
+        readTimeout: 5000
+        connectTimeout: 50000
+
+#CONFIGURAÇÃO SERVIÇOS EXTERNOS
+cartoes:
+  url: ${URL_SISTEMA_CARTOES:http://localhost:8888/api/cartoes}
+transacoes:
+  url: ${URL_SISTEMA_TRANSACOES:http://localhost:7777/api/cartoes}
