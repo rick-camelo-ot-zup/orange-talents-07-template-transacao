@@ -1,5 +1,7 @@
 package br.rickcm.transacaoapp.model;
 
+import br.rickcm.transacaoapp.rest.dto.TransacaoResponse;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -36,5 +38,25 @@ public class Transacao {
 
     public Cartao getCartao() {
         return cartao;
+    }
+
+    @Override
+    public String toString() {
+        return "EventoDeTransacao{" +
+                "id='" + id + '\'' +
+                ", valor=" + valor +
+                "}, efetivadaEm=" + efetivadaEm +
+                '}';
+    }
+
+    public TransacaoResponse toDto(){
+        return new TransacaoResponse(id,
+                valor,
+                estabelecimento.getNomeEstabelecimento(),
+                estabelecimento.getCidade(),
+                estabelecimento.getEndereco(),
+                cartao.getIdCartao(),
+                cartao.getEmail(),
+                efetivadaEm);
     }
 }

@@ -19,4 +19,8 @@ public class Cartao {
     public String getIdCartao() {
         return idCartao;
     }
+
+    public String getEmail() {
+        return email;
+    }
 }

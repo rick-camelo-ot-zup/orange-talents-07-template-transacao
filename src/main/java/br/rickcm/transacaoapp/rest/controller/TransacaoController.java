@@ -1,19 +1,21 @@
 package br.rickcm.transacaoapp.rest.controller;
 
+import br.rickcm.transacaoapp.model.Transacao;
+import br.rickcm.transacaoapp.repository.TransacaoRepository;
 import br.rickcm.transacaoapp.rest.dto.IniciarTransacoesRequest;
 import br.rickcm.transacaoapp.rest.dto.PararTransacaoRequest;
+import br.rickcm.transacaoapp.rest.dto.TransacaoResponse;
 import br.rickcm.transacaoapp.rest.external.ServicoCartao;
 import br.rickcm.transacaoapp.rest.external.TransacaoClient;
 import feign.FeignException.FeignClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class TransacaoController {
@@ -22,10 +24,12 @@ public class TransacaoController {
 
     private ServicoCartao servicoCartao;
     private TransacaoClient transacaoClient;
+    private TransacaoRepository repository;
 
-    public TransacaoController(ServicoCartao servicoCartao, TransacaoClient transacaoClient) {
+    public TransacaoController(ServicoCartao servicoCartao, TransacaoClient transacaoClient, TransacaoRepository repository) {
         this.servicoCartao = servicoCartao;
         this.transacaoClient = transacaoClient;
+        this.repository = repository;
     }
 
     @PostMapping("/transacoes")
@@ -58,5 +62,16 @@ public class TransacaoController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/cartoes/{id}/transacoes")
+    public ResponseEntity<?> buscaComprasRecentes(@PathVariable("id") String idCartao){
+        servicoCartao.validaCartao(idCartao);
+
+        List<Transacao> listaTransacoes = repository.findTop10ByCartao_IdCartaoOrderByEfetivadaEmDesc(idCartao);
+
+        List<TransacaoResponse> listaDtos = listaTransacoes.stream().map(Transacao::toDto).collect(Collectors.toList());
+
+        return ResponseEntity.ok(listaDtos);
     }
 }
