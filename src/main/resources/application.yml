@@ -1,3 +1,5 @@
+server:
+  port : 8082
 spring:
   application:
     name: transacoes-app
@@ -35,6 +37,13 @@ spring:
       group-id: ${KAFKA_CONSUMER_GROUP_ID:transacoes-app}
       # Modelo de coleta do consumidor (latest, earliest, none)
       auto-offset-reset: ${KAFKA_AUTO-OFFSET-RESET:latest}
+  # CONFIGURAÇÕES DE SPRING SECURITY RESOURCE SERVER
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:18080/auth/realms/transacoes}
+          jwk-set-uri: ${KEYCLOAK_JWKS_URI:http://localhost:18080/auth/realms/transacoes/protocol/openid-connect/certs}
 
 #CONFIGURAÇÕES DE TIMEOUT DO FEIGN
 feign:
